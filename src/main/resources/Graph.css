@@ -1,0 +1,33 @@
+graph {
+    fill-color: black;
+}
+
+edge {
+    fill-color: white;
+}
+
+node {
+    fill-color: white;
+    size: 30px;
+    text-color: white;
+    text-size: 15px;
+    text-style: bold;
+    text-offset: 0;
+    text-alignment: center;
+}
+
+/*node.s {*/
+/*    fill-color: green;*/
+/*}*/
+
+/*node.b {*/
+/*    fill-color: red;*/
+/*}*/
+
+/*node.h {*/
+/*    fill-color: purple;*/
+/*}*/
+
+/*node.c {*/
+/*    fill-color: orange;*/
+/*}*/

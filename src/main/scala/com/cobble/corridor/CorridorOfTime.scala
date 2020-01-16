@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets
 import org.apache.commons.csv.{CSVFormat, CSVParser, CSVRecord}
 import org.graphstream.graph.{Edge, Node}
 import org.graphstream.graph.implementations.MultiGraph
+import org.graphstream.ui.swingViewer.Viewer
+import org.graphstream.ui.swingViewer.Viewer.CloseFramePolicy
 
 
 object CorridorOfTime {
@@ -19,8 +21,8 @@ object CorridorOfTime {
         generateData()
         generateGraph()
         setupStyle()
-        val view = graph.display()
-        view.enableAutoLayout()
+        val viewer: Viewer = graph.display()
+        viewer.setCloseFramePolicy(CloseFramePolicy.EXIT)
     }
 
     def generateData(): Unit = {

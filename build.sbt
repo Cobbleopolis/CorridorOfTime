@@ -1,6 +1,6 @@
 organization := "com.cobble"
 
-name := "CorridorOfTime"
+name := "CorridorsOfTime"
 
 version := "1.0.0"
 
@@ -14,10 +14,11 @@ libraryDependencies ++= Seq(
     "com.typesafe.play" %% "play-json" % "2.8.1"
 )
 
-mainClass in Compile := Some("com.cobble.corridor.CorridorOfTime")
+mainClass in Compile := Some("com.cobble.corridor.CorridorsOfTime")
 
 mappings in Universal ++= Seq(
     file("codes.json") -> "codes.json",
+    file("README.md") -> "README.md",
     file("LICENSE") -> "LICENSE",
 )
 

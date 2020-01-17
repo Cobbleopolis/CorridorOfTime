@@ -16,7 +16,7 @@ import play.api.libs.json._
 import scala.io.{BufferedSource, Source}
 
 
-object CorridorOfTime {
+object CorridorsOfTime {
 
     var codeMap: CodeMap = _
 

@@ -1,11 +1,10 @@
 package com.cobble.corridor
 
-import org.graphstream.algorithm.generator.Generator
 import org.graphstream.stream.SourceBase
 
 import scala.collection.mutable.ArrayBuffer
 
-class HexGenerator(codeMap: CodeMap) extends SourceBase with Generator {
+class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
     final val GRAPH_X_SPACE: Double = 2000
 
@@ -35,13 +34,13 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase with Generator {
 
     val addedConnections: ArrayBuffer[Connection] = ArrayBuffer()
 
-    override def begin(): Unit = {
+    def begin(): Unit = {
         val startingCode: Code = codeMap.connections(index).start
         addNode(startingCode)
         setNodeLocation(startingCode, 0, 0)
     }
 
-    override def nextEvents(): Boolean = {
+    def nextEvents(): Boolean = {
         val connectionOpt: Option[Connection] = codeMap.connections
             .filter(!addedConnections.contains(_))
             .find(con => addedNodes.exists(n => con.isPartOfConnection(n)))
@@ -79,7 +78,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase with Generator {
         connectionOpt.isDefined || codeOpt.isDefined
     }
 
-    override def end(): Unit = {
+    def end(): Unit = {
 
     }
 

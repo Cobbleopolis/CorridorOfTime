@@ -2,15 +2,15 @@ package com.cobble.corridor
 
 import java.awt.Dimension
 import java.awt.event.{WindowAdapter, WindowEvent}
-import java.net.{URI, URL}
+import java.net.URI
 import java.nio.file.{Files, Path, Paths}
 
 import com.cobble.corridor.CodeSymbol.CodeSymbol
 import javax.swing.{JFrame, SwingUtilities}
 import org.graphstream.graph.implementations.MultiGraph
-import org.graphstream.ui.swingViewer.{View, Viewer}
-import org.graphstream.ui.swingViewer.Viewer.CloseFramePolicy
-import org.graphstream.ui.swingViewer.util.DefaultShortcutManager
+import org.graphstream.ui.swing_viewer.{SwingViewer, ViewPanel}
+import org.graphstream.ui.view.{View, Viewer}
+import org.graphstream.ui.view.Viewer.CloseFramePolicy
 import play.api.libs.json._
 
 import scala.io.{BufferedSource, Source}
@@ -35,7 +35,7 @@ object CorridorsOfTime {
     )
 
     def main(args: Array[String]): Unit = {
-        //        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer")
+        System.setProperty("org.graphstream.ui", "swing")
         generateData()
         generateGraph()
         setupStyle()
@@ -86,14 +86,14 @@ object CorridorsOfTime {
         val cssPathOpt: Option[URI] = cssPaths.find(Files.exists(_)).map(_.toUri)
 
         if (cssPathOpt.isDefined)
-            graph.addAttribute("ui.stylesheet", s"url('${cssPathOpt.get}')")
+            graph.setAttribute("ui.stylesheet", s"url('${cssPathOpt.get}')")
         else {
             println("Cannot find css file. Not adding styling. Looking for files: ")
             cssPaths.foreach(p => println(s"\t- $p"))
         }
 
-        graph.addAttribute("ui.quality")
-        graph.addAttribute("ui.antialias")
+        graph.setAttribute("ui.quality")
+        graph.setAttribute("ui.antialias")
     }
 
     def createJframe(): Unit = {
@@ -104,7 +104,7 @@ object CorridorsOfTime {
             println("************END STACKTRACE************")
             t.getThreadGroup.list()
         })
-        val viewer: Viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_SWING_THREAD)
+        val viewer: Viewer = new SwingViewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD)
         viewer.setCloseFramePolicy(CloseFramePolicy.EXIT)
         val view: View = viewer.addDefaultView(false)
         view.setShortcutManager(new CorridorShortcutManager(graph))
@@ -112,10 +112,13 @@ object CorridorsOfTime {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
         frame.addWindowListener(new WindowAdapter {
             override def windowClosing(e: WindowEvent): Unit = {
+                super.windowClosing(e)
                 viewer.close()
+                frame.dispose()
+                System.exit(0)
             }
         })
-        frame.add(view)
+        frame.add(view.asInstanceOf[ViewPanel])
         frame.setPreferredSize(new Dimension(800, 600))
         frame.pack()
         frame.setVisible(true)

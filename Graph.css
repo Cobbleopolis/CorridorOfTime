@@ -12,8 +12,9 @@ node {
     text-color: white;
     text-size: 15px;
     text-style: bold;
+    text-alignment: at-right;
     text-offset: 0;
-    text-alignment: center;
+    /*padding: 6px;*/
 }
 
 /*node.s {*/

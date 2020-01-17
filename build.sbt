@@ -8,9 +8,11 @@ scalaVersion := "2.13.1"
 
 maintainer := "https://github.com/Cobbleopolis/"
 
+resolvers += "jitpack" at "https://jitpack.io"
+
 libraryDependencies ++= Seq(
-    "org.graphstream" % "gs-core" % "1.2",
-    "org.graphstream" % "gs-ui" % "1.2",
+    "com.github.graphstream" % "gs-core" % "2.0.0-beta",
+    "com.github.graphstream" % "gs-ui-swing" % "2.0-alpha",
     "com.typesafe.play" %% "play-json" % "2.8.1"
 )
 

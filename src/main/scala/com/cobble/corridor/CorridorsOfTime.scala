@@ -2,8 +2,8 @@ package com.cobble.corridor
 
 import java.awt.Dimension
 import java.awt.event.{WindowAdapter, WindowEvent}
-import java.net.URL
-import java.nio.file.{Files, Paths}
+import java.net.{URI, URL}
+import java.nio.file.{Files, Path, Paths}
 
 import com.cobble.corridor.CodeSymbol.CodeSymbol
 import javax.swing.{JFrame, SwingUtilities}
@@ -24,6 +24,16 @@ object CorridorsOfTime {
 
     val graph: MultiGraph = new MultiGraph(TITLE)
 
+    val codesJsonPaths: Array[Path] = Array(
+        Paths.get(".", "codes.json"),
+        Paths.get("..", "codes.json")
+    )
+
+    val cssPaths: Array[Path] = Array(
+        Paths.get(".", "Graph.css"),
+        Paths.get("..", "Graph.css")
+    )
+
     def main(args: Array[String]): Unit = {
         //        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer")
         generateData()
@@ -33,32 +43,31 @@ object CorridorsOfTime {
     }
 
     def generateData(): Unit = {
-        if (!(Files.exists(Paths.get(".", "codes.json")) || Files.exists(Paths.get("..", "codes.json")))) { //Clean this up maybe
-            System.err.println("No ./codes.json or ../codes.json file found")
+        val existingPathOpt: Option[String] = codesJsonPaths.find(Files.exists(_)).map(_.toString)
+
+        if (existingPathOpt.isDefined) {
+            val codesSource: BufferedSource = Source.fromFile(existingPathOpt.get)
+            val codeJson: JsValue = Json.parse(codesSource.getLines.mkString("\n"))
+            codesSource.close()
+            implicit val codeSymbolFormat: Format[CodeSymbol] = new Format[CodeSymbol] {
+                def reads(json: JsValue): JsResult[CodeSymbol] = {
+                    val str: String = json.as[String].trim.toUpperCase
+                    if (CodeSymbol.values.exists(_.toString == str))
+                        JsSuccess(CodeSymbol.withName(str))
+                    else
+                        JsSuccess(CodeSymbol.UNKNOWN)
+                }
+
+                def writes(codeSymbol: CodeSymbol): JsValue = JsString(codeSymbol.toString)
+            }
+            implicit val codeFormat: Format[Code] = Json.format[Code]
+            val codes: Array[Code] = codeJson("codes").as[Array[Code]].filter(_.isValid).distinct
+            codeMap = new CodeMap(codes)
+        } else {
+            System.err.println("No codes json file found. Looking for files:")
+            codesJsonPaths.foreach(p => System.out.println(s"\t- $p"))
             System.exit(2)
         }
-
-        val codesSource: BufferedSource = if (Files.exists(Paths.get(".", "codes.json")))
-            Source.fromFile("./codes.json")
-        else
-            Source.fromFile("../codes.json")
-
-        val codeJson: JsValue = Json.parse(codesSource.getLines.mkString("\n"))
-        codesSource.close()
-        implicit val codeSymbolFormat: Format[CodeSymbol] = new Format[CodeSymbol] {
-            def reads(json: JsValue): JsResult[CodeSymbol] = {
-                val str: String = json.as[String].trim.toUpperCase
-                if (CodeSymbol.values.exists(_.toString == str))
-                    JsSuccess(CodeSymbol.withName(str))
-                else
-                    JsSuccess(CodeSymbol.UNKNOWN)
-            }
-
-            def writes(codeSymbol: CodeSymbol): JsValue = JsString(codeSymbol.toString)
-        }
-        implicit val codeFormat: Format[Code] = Json.format[Code]
-        val codes: Array[Code] = codeJson("codes").as[Array[Code]].filter(_.isValid).distinct
-        codeMap = new CodeMap(codes)
     }
 
     def generateGraph(): Unit = {
@@ -74,16 +83,14 @@ object CorridorsOfTime {
     }
 
     def setupStyle(): Unit = {
-        var cssPath: String = ""
-        if (Files.exists(Paths.get(".", "Graph.css")))
-            cssPath = Paths.get(".", "Graph.css").toString
-        else if (Files.exists(Paths.get("..", "Graph.css")))
-            cssPath = Paths.get("..", "Graph.css").toString
-        if (cssPath.isEmpty)
-            System.out.println("No ./Graph.css or ../Graph.css file found. Not adding any styling.")
-        else
-            graph.addAttribute("ui.stylesheet", s"url('$cssPath')")
-//        val cssUrl: URL = getClass.getClassLoader.getResource("Graph.css")
+        val cssPathOpt: Option[URI] = cssPaths.find(Files.exists(_)).map(_.toUri)
+
+        if (cssPathOpt.isDefined)
+            graph.addAttribute("ui.stylesheet", s"url('${cssPathOpt.get}')")
+        else {
+            println("Cannot find css file. Not adding styling. Looking for files: ")
+            cssPaths.foreach(p => println(s"\t- $p"))
+        }
 
         graph.addAttribute("ui.quality")
         graph.addAttribute("ui.antialias")

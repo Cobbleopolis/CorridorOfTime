@@ -91,4 +91,5 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 #Custom
+screenshots/
 screenshots/**

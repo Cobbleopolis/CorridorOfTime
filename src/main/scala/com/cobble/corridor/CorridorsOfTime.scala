@@ -18,9 +18,11 @@ import scala.io.{BufferedSource, Source}
 
 object CorridorsOfTime {
 
+    final val TITLE: String = "The Fuck Bungie"
+
     var codeMap: CodeMap = _
 
-    val graph: MultiGraph = new MultiGraph("The Fuck Bungie")
+    val graph: MultiGraph = new MultiGraph(TITLE)
 
     def main(args: Array[String]): Unit = {
         //        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer")
@@ -98,8 +100,8 @@ object CorridorsOfTime {
         val viewer: Viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_SWING_THREAD)
         viewer.setCloseFramePolicy(CloseFramePolicy.EXIT)
         val view: View = viewer.addDefaultView(false)
-        view.setShortcutManager(new DefaultShortcutManager())
-        val frame: JFrame = new JFrame("The fuck Bungie")
+        view.setShortcutManager(new CorridorShortcutManager(graph))
+        val frame: JFrame = new JFrame(TITLE)
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
         frame.addWindowListener(new WindowAdapter {
             override def windowClosing(e: WindowEvent): Unit = {
@@ -110,6 +112,7 @@ object CorridorsOfTime {
         frame.setPreferredSize(new Dimension(800, 600))
         frame.pack()
         frame.setVisible(true)
+        frame.requestFocus()
     }
 
 }

@@ -13,3 +13,4 @@ This will read the JSON from [TLJ's site](https://tjl.co/corridors-of-time/). Si
 |-------------------|-------------|
 | Page Up/Page Down | Zoom In/Out |
 | Arrow Keys        | Pan         |
+| Space             | Screenshot  |

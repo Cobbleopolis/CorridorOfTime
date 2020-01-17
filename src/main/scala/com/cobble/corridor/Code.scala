@@ -10,6 +10,8 @@ case class Code(center: CodeSymbol, walls: Array[Boolean], nodes: Array[Array[Co
 
     lazy val isValid: Boolean = !nodes.flatten.contains(CodeSymbol.UNKNOWN)
 
+    def isSideOpen(side: Int): Boolean = walls(side)
+
     def isSideEmpty(side: Int): Boolean = nodes(side).forall(_ == CodeSymbol.BLANK)
 
     def canConnect(other: Code): Option[Int] = {

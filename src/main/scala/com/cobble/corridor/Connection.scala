@@ -13,5 +13,9 @@ case class Connection(start: Code, end: Code, side: Int) {
             None
     }
 
+    lazy val edgeId: String = start.checksum + "|" + end.checksum
+
     lazy val codeArr: Array[Code] = Array(start, end)
+
+    lazy val isTraversable: Boolean = start.isSideOpen(side) && end.isSideOpen(CorridorUtils.getOppositeSide(side))
 }

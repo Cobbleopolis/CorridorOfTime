@@ -31,3 +31,7 @@ node.B {
 /*node.c {*/
 /*    fill-color: orange;*/
 /*}*/
+
+edge.traversable {
+    fill-color: #00FFFF;
+}

@@ -53,7 +53,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase with Generator {
             addNodeAttribute(connection.start, "ui.label", connection.start.center.toString)
             addNodeAttribute(connection.start, "ui.class", connection.start.center.toString)
             if (!nodeLocation.contains(connection.start))
-                setNodeLocation(connection.start, getRotatedPoint(nodeLocation(connection.end), getOppositeSide(connection.side)))
+                setNodeLocation(connection.start, getRotatedPoint(nodeLocation(connection.end), CorridorUtils.getOppositeSide(connection.side)))
 
             addNode(connection.end)
             addNodeAttribute(connection.end, "ui.label", connection.end.center.toString)
@@ -62,6 +62,8 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase with Generator {
                 setNodeLocation(connection.end, getRotatedPoint(nodeLocation(connection.start), connection.side))
 
             addEdge(connection)
+            if (connection.isTraversable)
+                addEdgeAttribute(connection, "ui.class", "traversable")
         } else {
             codeOpt = codeMap.connections.flatMap(_.codeArr).distinct.find(!addedNodes.contains(_))
             if (codeOpt.isDefined) {
@@ -109,26 +111,19 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase with Generator {
     def addEdge(connection: Connection): Unit = {
         if (!addedConnections.contains(connection)) {
             println(s"Adding Connection: $connection")
-            val edgeId: String = connection.start.checksum + "|" + connection.end.checksum
-            sendEdgeAdded(edgeId, edgeId, connection.start.checksum, connection.end.checksum, false)
+            sendEdgeAdded(connection.edgeId, connection.edgeId, connection.start.checksum, connection.end.checksum, false)
             addedConnections += connection
         }
+    }
+
+    def addEdgeAttribute(connection: Connection, attribute: String, value: Any): Unit = {
+        sendEdgeAttributeAdded(connection.edgeId, connection.edgeId, attribute, value)
     }
 
     def getRotatedPoint(s: (Double, Double), side: Int): (Double, Double) = getRotatedPoint(s._1, s._2, side)
 
     def getRotatedPoint(sx: Double, sy: Double, side: Int): (Double, Double) = {
         (sx + (Math.cos(SIDE_DELTA * side - DEG_90) * NODE_SPACE), sy + (Math.sin(SIDE_DELTA * side - DEG_90) * NODE_SPACE))
-    }
-
-    def getOppositeSide(side: Int): Int = side match {
-        case 0 => 3
-        case 1 => 4
-        case 2 => 5
-        case 3 => 0
-        case 4 => 1
-        case 5 => 2
-        case _ => -1
     }
 
 }

@@ -4,13 +4,12 @@ import java.awt.Dimension
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.net.URL
 
-import scala.jdk.CollectionConverters._
 import com.cobble.corridor.CodeSymbol.CodeSymbol
 import javax.swing.{JFrame, SwingUtilities}
 import org.graphstream.graph.implementations.MultiGraph
 import org.graphstream.ui.swingViewer.{View, Viewer}
 import org.graphstream.ui.swingViewer.Viewer.CloseFramePolicy
-import org.graphstream.ui.swingViewer.util.{Camera, DefaultShortcutManager}
+import org.graphstream.ui.swingViewer.util.DefaultShortcutManager
 import play.api.libs.json._
 
 import scala.io.{BufferedSource, Source}
@@ -27,11 +26,7 @@ object CorridorOfTime {
         generateData()
         generateGraph()
         setupStyle()
-        println(Thread.currentThread())
-        SwingUtilities.invokeLater(new Runnable {
-            println(Thread.currentThread())
-            override def run(): Unit = createJframe()
-        })
+        SwingUtilities.invokeLater(() => createJframe())
     }
 
     def generateData(): Unit = {
@@ -49,7 +44,7 @@ object CorridorOfTime {
             def writes(codeSymbol: CodeSymbol): JsValue = JsString(codeSymbol.toString)
         }
         implicit val codeFormat: Format[Code] = Json.format[Code]
-        val codes: Array[Code] = codeJson("codes").as[Array[Code]].filter(_.isValid).distinct.take(1000) //TODO remove limit
+        val codes: Array[Code] = codeJson("codes").as[Array[Code]].filter(_.isValid).distinct
         codeMap = new CodeMap(codes)
     }
 
@@ -73,21 +68,17 @@ object CorridorOfTime {
     }
 
     def createJframe(): Unit = {
-        println(Thread.currentThread())
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
-            override def uncaughtException(t: Thread, e: Throwable): Unit = {
-                println(s"Unhandled Exception due to $t throwing $e")
-                println("************START STACKTRACE************")
-                e.printStackTrace()
-                println("************END STACKTRACE************")
-                t.getThreadGroup.list()
-            }
+        Thread.setDefaultUncaughtExceptionHandler((t: Thread, e: Throwable) => {
+            println(s"Unhandled Exception due to $t throwing $e")
+            println("************START STACKTRACE************")
+            e.printStackTrace()
+            println("************END STACKTRACE************")
+            t.getThreadGroup.list()
         })
         val viewer: Viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_SWING_THREAD)
         viewer.setCloseFramePolicy(CloseFramePolicy.EXIT)
         val view: View = viewer.addDefaultView(false)
         view.setShortcutManager(new DefaultShortcutManager())
-        val camera: Camera = view.getCamera
         val frame: JFrame = new JFrame("The fuck Bungie")
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
         frame.addWindowListener(new WindowAdapter {

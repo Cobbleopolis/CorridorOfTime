@@ -83,7 +83,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase with Generator {
 
     def addNode(code: Code): Unit = {
         if (!addedNodes.contains(code)) {
-            println(s"Adding node: ${code.checksum}")
+            println(s"Adding Node: ${code.checksum}")
             sendNodeAdded(code.checksum, code.checksum)
             addedNodes += code
         }

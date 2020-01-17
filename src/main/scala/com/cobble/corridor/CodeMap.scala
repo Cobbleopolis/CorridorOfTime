@@ -7,9 +7,10 @@ class CodeMap(val codes: Array[Code]) {
     def generateMap(): Array[Connection] = {
         codes.foreach(c => {
             connections ++= codes.map(o => (o, c.canConnect(o)))
-                .filter(o => o._2.nonEmpty && !connections.exists(i => i.start == o._1 && i.end == c))
+                .filter(o => o._2.nonEmpty && !connections.exists(i => i.isPartOfConnection(c) && i.isPartOfConnection(o._1)))
                 .map(i => Connection(c, i._1, i._2.get))
         })
+        connections = connections.distinct
         connections
 //        var allConnections: Array[(Code, Code)] = Array()
 //        codes.map(c => {

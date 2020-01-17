@@ -8,7 +8,7 @@ edge {
 
 node {
     fill-color: white;
-    size: 10px;
+    /*size: 10px;*/
     text-color: white;
     text-size: 15px;
     text-style: bold;
@@ -20,9 +20,9 @@ node {
 /*    fill-color: green;*/
 /*}*/
 
-/*node.b {*/
-/*    fill-color: red;*/
-/*}*/
+node.B {
+    fill-color: orange;
+}
 
 /*node.h {*/
 /*    fill-color: purple;*/

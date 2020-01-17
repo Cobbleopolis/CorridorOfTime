@@ -8,7 +8,7 @@ case class Code(center: CodeSymbol, walls: Array[Boolean], nodes: Array[Array[Co
         walls.map(b => if (b) "1" else "0").mkString + "#" +
         nodes.map(_.mkString).mkString("#")
 
-    lazy val isValid: Boolean = !nodes.flatten.contains(CodeSymbol.UNKNOWN)
+    lazy val isValid: Boolean = !(nodes.flatten.contains(CodeSymbol.UNKNOWN) || center == CodeSymbol.UNKNOWN)
 
     def isSideOpen(side: Int): Boolean = walls(side)
 

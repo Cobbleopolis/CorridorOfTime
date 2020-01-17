@@ -1,16 +1,21 @@
+organization := "com.cobble"
+
 name := "CorridorOfTime"
 
-version := "0.1"
+version := "1.0.0"
 
 scalaVersion := "2.13.1"
 
-resolvers += "Typesafe Repo" at "https://repo.typesafe.com/typesafe/releases/"
+maintainer := "https://github.com/Cobbleopolis/"
 
 libraryDependencies ++= Seq(
-    "org.apache.commons" % "commons-csv" % "1.4",
     "org.graphstream" % "gs-core" % "1.2",
     "org.graphstream" % "gs-ui" % "1.2",
     "com.typesafe.play" %% "play-json" % "2.8.1"
 )
-//"org.jgrapht" % "jgrapht-core" % "1.3.0",
-//"com.github.vlsi.mxgraph" % "jgraphx" % "4.0.5
+
+mainClass in Compile := Some("com.cobble.corridor.CorridorOfTime")
+
+mappings in Universal += file("codes.json") -> "codes.json"
+
+enablePlugins(UniversalPlugin, JavaAppPackaging)

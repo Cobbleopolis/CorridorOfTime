@@ -3,6 +3,7 @@ package com.cobble.corridor
 import java.awt.Dimension
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.net.URL
+import java.nio.file.{Files, Paths}
 
 import com.cobble.corridor.CodeSymbol.CodeSymbol
 import javax.swing.{JFrame, SwingUtilities}
@@ -22,7 +23,7 @@ object CorridorOfTime {
     val graph: MultiGraph = new MultiGraph("The Fuck Bungie")
 
     def main(args: Array[String]): Unit = {
-//        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer")
+        //        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer")
         generateData()
         generateGraph()
         setupStyle()
@@ -30,7 +31,16 @@ object CorridorOfTime {
     }
 
     def generateData(): Unit = {
-        val codesSource: BufferedSource = Source.fromFile("./codes.json")
+        if (!(Files.exists(Paths.get(".", "codes.json")) || Files.exists(Paths.get("..", "codes.json")))) { //Clean this up maybe
+            System.err.println("No ./codes.json or ../codes.json file found")
+            System.exit(2)
+        }
+
+        val codesSource: BufferedSource = if (Files.exists(Paths.get(".", "codes.json")))
+            Source.fromFile("./codes.json")
+        else
+            Source.fromFile("../codes.json")
+
         val codeJson: JsValue = Json.parse(codesSource.getLines.mkString("\n"))
         codesSource.close()
         implicit val codeSymbolFormat: Format[CodeSymbol] = new Format[CodeSymbol] {
@@ -41,6 +51,7 @@ object CorridorOfTime {
                 else
                     JsSuccess(CodeSymbol.UNKNOWN)
             }
+
             def writes(codeSymbol: CodeSymbol): JsValue = JsString(codeSymbol.toString)
         }
         implicit val codeFormat: Format[Code] = Json.format[Code]
@@ -56,7 +67,7 @@ object CorridorOfTime {
         var added: Boolean = false
         do {
             added = generator.nextEvents()
-        } while(added)
+        } while (added)
         generator.end()
     }
 

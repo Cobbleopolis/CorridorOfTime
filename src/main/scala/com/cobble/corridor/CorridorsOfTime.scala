@@ -72,8 +72,17 @@ object CorridorsOfTime {
     }
 
     def setupStyle(): Unit = {
-        val cssUrl: URL = getClass.getClassLoader.getResource("Graph.css")
-        graph.addAttribute("ui.stylesheet", s"url('$cssUrl')")
+        var cssPath: String = ""
+        if (Files.exists(Paths.get(".", "Graph.css")))
+            cssPath = Paths.get(".", "Graph.css").toString
+        else if (Files.exists(Paths.get("..", "Graph.css")))
+            cssPath = Paths.get("..", "Graph.css").toString
+        if (cssPath.isEmpty)
+            System.out.println("No ./Graph.css or ../Graph.css file found. Not adding any styling.")
+        else
+            graph.addAttribute("ui.stylesheet", s"url('$cssPath')")
+//        val cssUrl: URL = getClass.getClassLoader.getResource("Graph.css")
+
         graph.addAttribute("ui.quality")
         graph.addAttribute("ui.antialias")
     }

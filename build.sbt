@@ -18,6 +18,7 @@ mainClass in Compile := Some("com.cobble.corridor.CorridorsOfTime")
 
 mappings in Universal ++= Seq(
     file("codes.json") -> "codes.json",
+    file("Graph.css") -> "Graph.css",
     file("README.md") -> "README.md",
     file("LICENSE") -> "LICENSE",
 )

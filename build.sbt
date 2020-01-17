@@ -16,6 +16,9 @@ libraryDependencies ++= Seq(
 
 mainClass in Compile := Some("com.cobble.corridor.CorridorOfTime")
 
-mappings in Universal += file("codes.json") -> "codes.json"
+mappings in Universal ++= Seq(
+    file("codes.json") -> "codes.json",
+    file("LICENSE") -> "LICENSE",
+)
 
 enablePlugins(UniversalPlugin, JavaAppPackaging)

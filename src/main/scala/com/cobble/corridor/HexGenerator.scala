@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
-    final val GRAPH_X_SPACE: Double = 200
+    final val GRAPH_X_SPACE: Double = 300
 
     final val GRAPH_Y_SPACE: Double = 300
 

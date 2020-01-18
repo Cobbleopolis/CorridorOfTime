@@ -3,36 +3,50 @@ graph {
 }
 
 edge {
-    fill-color: white;
+    fill-color: red;
 }
 
 node {
     fill-color: white;
-    /*size: 10px;*/
+    size: 20gu;
     text-color: white;
-    text-size: 15px;
+    text-size: 15gu;
     text-style: bold;
     text-alignment: at-right;
     text-offset: 0;
-    /*padding: 6px;*/
+    text-mode: hidden;
+    shape: circle;
 }
-
-/*node.s {*/
-/*    fill-color: green;*/
-/*}*/
 
 node.B {
-    fill-color: orange;
+    fill-color: darkgray;
 }
 
-/*node.h {*/
-/*    fill-color: purple;*/
-/*}*/
+node.H {
+    fill-mode: image-scaled-ratio-max;
+    fill-image: url('images/hex.png');
+}
 
-/*node.c {*/
-/*    fill-color: orange;*/
-/*}*/
+node.C {
+    fill-mode: image-scaled-ratio-max;
+    fill-image: url('images/clover.png');
+}
+
+node.S {
+    fill-mode: image-scaled-ratio-max;
+    fill-image: url('images/snake.png');
+}
+
+node.D {
+    fill-mode: image-scaled-ratio-max;
+    fill-image: url('images/diamond.png');
+}
+
+node.P {
+    fill-mode: image-scaled-ratio-max;
+    fill-image: url('images/plus.png');
+}
 
 edge.traversable {
-    fill-color: #00FFFF;
+    fill-color: white;
 }

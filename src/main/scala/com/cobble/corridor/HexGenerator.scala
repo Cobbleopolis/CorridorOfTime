@@ -6,11 +6,11 @@ import scala.collection.mutable.ArrayBuffer
 
 class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
-    final val GRAPH_X_SPACE: Double = 2000
+    final val GRAPH_X_SPACE: Double = 200
 
-    final val GRAPH_Y_SPACE: Double = 3000
+    final val GRAPH_Y_SPACE: Double = 300
 
-    final val NODE_SPACE: Double = 400
+    final val NODE_SPACE: Double = 40
 
     final val SIDE_COUNT: Int = 6
 
@@ -18,7 +18,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
     final val DEG_90: Double = (2 * Math.PI) / 4
 
-    final val MAX_X: Double = 150000
+    final val MAX_X: Double = 15000
 
     var largestX: Double = 0
 

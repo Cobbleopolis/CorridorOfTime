@@ -1,3 +1,5 @@
+import NativePackagerHelper._
+
 organization := "com.cobble"
 
 name := "CorridorsOfTime"
@@ -24,5 +26,7 @@ mappings in Universal ++= Seq(
     file("README.md") -> "README.md",
     file("LICENSE") -> "LICENSE",
 )
+
+mappings in Universal ++= directory("images")
 
 enablePlugins(UniversalPlugin, JavaAppPackaging)

@@ -14,6 +14,8 @@ case class Code(center: CodeSymbol, walls: Array[Boolean], nodes: Array[Array[Co
 
     def isSideEmpty(side: Int): Boolean = nodes(side).forall(_ == CodeSymbol.BLANK)
 
+    lazy val isEntranceOrExit: Boolean = walls.zip(nodes).exists(i => i._1 && i._2.forall(_ == CodeSymbol.UNKNOWN))
+
     def canConnect(other: Code): Option[Int] = {
         if (!this.isSideEmpty(0) && this.nodes(0).sameElements(other.nodes(3)))
             Some(0)

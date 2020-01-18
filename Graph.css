@@ -47,6 +47,12 @@ node.P {
     fill-image: url('images/plus.png');
 }
 
+node.entranceexit {
+    stroke-mode: plain;
+    stroke-color: lime;
+    stroke-width: 5gu;
+}
+
 edge.traversable {
     fill-color: white;
 }

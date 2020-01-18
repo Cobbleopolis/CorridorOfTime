@@ -50,13 +50,19 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
             addNode(connection.start)
             addNodeAttribute(connection.start, "ui.label", connection.start.center.toString)
-            addNodeAttribute(connection.start, "ui.class", connection.start.center.toString)
+            var startNodeClass: String = connection.start.center.toString
+            if (connection.start.isEntranceOrExit)
+                startNodeClass += ", entranceexit"
+            addNodeAttribute(connection.start, "ui.class",  startNodeClass)
             if (!nodeLocation.contains(connection.start))
                 setNodeLocation(connection.start, getRotatedPoint(nodeLocation(connection.end), CorridorUtils.getOppositeSide(connection.side)))
 
             addNode(connection.end)
             addNodeAttribute(connection.end, "ui.label", connection.end.center.toString)
-            addNodeAttribute(connection.end, "ui.class", connection.end.center.toString)
+            var endNodeClass: String = connection.end.center.toString
+            if (connection.end.isEntranceOrExit)
+                endNodeClass += ", entranceexit"
+            addNodeAttribute(connection.end, "ui.class", endNodeClass)
             if (!nodeLocation.contains(connection.end))
                 setNodeLocation(connection.end, getRotatedPoint(nodeLocation(connection.start), connection.side))
 

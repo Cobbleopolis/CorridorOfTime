@@ -10,11 +10,11 @@ case class Code(center: CodeSymbol, walls: Array[Boolean], nodes: Array[Array[Co
 
     lazy val isValid: Boolean = !(nodes.flatten.contains(CodeSymbol.UNKNOWN) || center == CodeSymbol.UNKNOWN)
 
-    def isSideOpen(side: Int): Boolean = walls(side)
+    def isSideOpen(side: Int): Boolean = !walls(side)
 
     def isSideEmpty(side: Int): Boolean = nodes(side).forall(_ == CodeSymbol.BLANK)
 
-    val isEntranceOrExit: Boolean = walls.zip(nodes).exists(i => i._1 && i._2.forall(_ == CodeSymbol.UNKNOWN))
+    val isEntranceOrExit: Boolean = walls.zipWithIndex.exists(i => !i._1 && nodes(i._2).forall(_ == CodeSymbol.BLANK))
 
     def canConnect(other: Code): Option[Int] = {
         if (!this.isSideEmpty(0) && this.nodes(0).sameElements(other.nodes(3)))

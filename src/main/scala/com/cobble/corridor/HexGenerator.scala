@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
-    final val GRAPH_X_SPACE: Double = 300
+    final val GRAPH_X_SPACE: Double = 400
 
     final val GRAPH_Y_SPACE: Double = 300
 
@@ -128,7 +128,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
     def getRotatedPoint(s: (Double, Double), side: Int): (Double, Double) = getRotatedPoint(s._1, s._2, side)
 
     def getRotatedPoint(sx: Double, sy: Double, side: Int): (Double, Double) = {
-        (sx + (Math.cos(SIDE_DELTA * side + DEG_90) * NODE_SPACE), sy + (Math.sin(SIDE_DELTA * side + DEG_90) * NODE_SPACE))
+        (sx - (Math.cos(SIDE_DELTA * side + DEG_90) * NODE_SPACE), sy + (Math.sin(SIDE_DELTA * side + DEG_90) * NODE_SPACE))
     }
 
 }

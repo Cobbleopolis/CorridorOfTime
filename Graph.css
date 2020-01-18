@@ -49,8 +49,8 @@ node.P {
 
 node.entranceexit {
     stroke-mode: plain;
-    stroke-color: lime;
-    stroke-width: 5gu;
+    stroke-color: green;
+    stroke-width: 2gu;
 }
 
 edge.traversable {

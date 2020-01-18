@@ -85,9 +85,14 @@ object CorridorsOfTime {
     def setupStyle(): Unit = {
         val cssPathOpt: Option[URI] = cssPaths.find(Files.exists(_)).map(_.toUri)
 
-        if (cssPathOpt.isDefined)
-            graph.setAttribute("ui.stylesheet", s"url('${cssPathOpt.get}')")
-        else {
+        if (cssPathOpt.isDefined) {
+            val cssSource: Source = Source.fromFile(cssPathOpt.get)
+            var cssString: String = cssSource.getLines.mkString("\n")
+            cssSource.close()
+            if(cssPathOpt.get.toString.contains(".."))
+                cssString = cssString.replaceAll("fill-image: url\\('\\.", "fill-image: url\\('\\.\\.")
+            graph.setAttribute("ui.stylesheet", cssString)
+        } else {
             println("Cannot find css file. Not adding styling. Looking for files: ")
             cssPaths.foreach(p => println(s"\t- $p"))
         }

@@ -24,27 +24,27 @@ node.B {
 
 node.H {
     fill-mode: image-scaled-ratio-max;
-    fill-image: url('images/hex.png');
+    fill-image: url('./images/hex.png');
 }
 
 node.C {
     fill-mode: image-scaled-ratio-max;
-    fill-image: url('images/clover.png');
+    fill-image: url('./images/clover.png');
 }
 
 node.S {
     fill-mode: image-scaled-ratio-max;
-    fill-image: url('images/snake.png');
+    fill-image: url('./images/snake.png');
 }
 
 node.D {
     fill-mode: image-scaled-ratio-max;
-    fill-image: url('images/diamond.png');
+    fill-image: url('./images/diamond.png');
 }
 
 node.P {
     fill-mode: image-scaled-ratio-max;
-    fill-image: url('images/plus.png');
+    fill-image: url('./images/plus.png');
 }
 
 node.entranceexit {

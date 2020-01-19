@@ -10,7 +10,7 @@ class CodeMap(val codes: Array[Code]) {
                 .filter(o => o._2.nonEmpty && !connections.exists(i => i.isPartOfConnection(c) && i.isPartOfConnection(o._1)))
                 .map(i => Connection(c, i._1, i._2.get))
         })
-        connections = connections.distinct
+        connections = connections.distinct.filter(_.isValid)
         connections
 //        var allConnections: Array[(Code, Code)] = Array()
 //        codes.map(c => {

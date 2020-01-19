@@ -28,7 +28,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
     var index: Int = 0
 
-    var connectionArr: ArrayBuffer[Connection] = ArrayBuffer(codeMap.connections.clone(): _*)
+    var connectionArr: ArrayBuffer[Connection] = ArrayBuffer(codeMap.connections.filter(_.isValid).clone(): _*)
 
     val originalConnectionSize: Int = connectionArr.length
 
@@ -41,7 +41,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
     val addedConnections: ArrayBuffer[Connection] = ArrayBuffer()
 
     def begin(): Unit = {
-        val startingCode: Code = codeMap.connections(index).start
+        val startingCode: Code = connectionArr.head.start
         addNode(startingCode)
         setNodeLocation(startingCode, 0, 0)
     }

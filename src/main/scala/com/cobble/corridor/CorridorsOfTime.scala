@@ -151,9 +151,8 @@ object CorridorsOfTime {
         val format: CSVFormat = CSVFormat.EXCEL.withHeader("Image Link", "Center", "Openings", "Link 1", "Link 2", "Link 3", "Link 4", "Link 5", "Link 6")
         val parser: Iterator[CSVRecord] = CSVParser.parse(path.toFile, StandardCharsets.UTF_8, format).iterator.asScala.drop(1)
         parser.map(record => {
-//            val imgText: String = record.get("Image Link")
             val wallArr: Array[Int] = record.get("Openings").split("\\D").filter(_.nonEmpty).map(_.toInt)
-            val openingArr: Array[Boolean] = (1 to 6).map(wallArr.contains).toArray
+            val openingArr: Array[Boolean] = (1 to 6).map(i => !wallArr.contains(i)).toArray
             Code(CodeSymbol.fromFullName(record.get("Center")),
                 openingArr,
                 Array(

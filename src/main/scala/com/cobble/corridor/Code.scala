@@ -8,11 +8,15 @@ case class Code(center: CodeSymbol, walls: Array[Boolean], nodes: Array[Array[Co
         walls.map(b => if (b) "1" else "0").mkString + "#" +
         nodes.map(_.mkString).mkString("#")
 
+    var connections: Array[Boolean] = Array(false, false, false, false, false, false)
+
     lazy val isValid: Boolean = !(nodes.flatten.contains(CodeSymbol.UNKNOWN) || center == CodeSymbol.UNKNOWN)
 
     def isSideOpen(side: Int): Boolean = !walls(side)
 
     def isSideEmpty(side: Int): Boolean = nodes(side).forall(_ == CodeSymbol.BLANK)
+
+    def isSideConnected(side: Int): Boolean = connections(side)
 
     val isEntranceOrExit: Boolean = walls.zipWithIndex.exists(i => !i._1 && nodes(i._2).forall(_ == CodeSymbol.BLANK))
 

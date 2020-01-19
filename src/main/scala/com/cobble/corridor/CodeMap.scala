@@ -6,9 +6,19 @@ class CodeMap(val codes: Array[Code]) {
 
     def generateMap(): Array[Connection] = {
         codes.foreach(c => {
-            connections ++= codes.map(o => (o, c.canConnect(o)))
-                .filter(o => o._2.nonEmpty && !connections.exists(i => i.isPartOfConnection(c) && i.isPartOfConnection(o._1)))
+            val newConnections: Array[Connection] =codes.map(o => (o, c.canConnect(o)))
+                .filter(o =>
+                    o._2.nonEmpty &&
+                        !connections.exists(i => i.isPartOfConnection(c) && i.isPartOfConnection(o._1)) &&
+                        !c.isSideConnected(o._2.get) && !o._1.isSideConnected(CorridorUtils.getOppositeSide(o._2.get))
+
+                )
                 .map(i => Connection(c, i._1, i._2.get))
+            newConnections.foreach(c => {
+                c.start.connections(c.side) = true
+                c.end.connections(CorridorUtils.getOppositeSide(c.side)) = true
+            })
+            connections ++= newConnections
         })
         connections = connections.distinct.filter(_.isValid)
         connections

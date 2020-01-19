@@ -56,30 +56,30 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
         if (connectionOpt.isDefined) {
             val connection: Connection = connectionOpt.get
 
-            if (getDistanceSqr(connection) <= NODE_SPACE * NODE_SPACE) {
-                addNode(connection.start)
-                addNodeAttribute(connection.start, "ui.label", connection.start.center.toString)
-                var startNodeClass: String = connection.start.center.toString
-                if (connection.start.isEntranceOrExit)
-                    startNodeClass += ", entranceexit"
-                addNodeAttribute(connection.start, "ui.class", startNodeClass)
-                if (!nodeLocation.contains(connection.start) && nodeLocation.contains(connection.end))
-                    setNodeLocation(connection.start, getRotatedPoint(nodeLocation(connection.end), CorridorUtils.getOppositeSide(connection.side)))
+            //            if (getDistanceSqr(connection) <= NODE_SPACE * NODE_SPACE) {
+            addNode(connection.start)
+            addNodeAttribute(connection.start, "ui.label", connection.start.center.toString)
+            var startNodeClass: String = connection.start.center.toString
+            if (connection.start.isEntranceOrExit)
+                startNodeClass += ", entranceexit"
+            addNodeAttribute(connection.start, "ui.class", startNodeClass)
+            if (!nodeLocation.contains(connection.start) && nodeLocation.contains(connection.end))
+                setNodeLocation(connection.start, getRotatedPoint(nodeLocation(connection.end), CorridorUtils.getOppositeSide(connection.side)))
 
-                addNode(connection.end)
-                addNodeAttribute(connection.end, "ui.label", connection.end.center.toString)
-                var endNodeClass: String = connection.end.center.toString
-                if (connection.end.isEntranceOrExit)
-                    endNodeClass += ", entranceexit"
-                addNodeAttribute(connection.end, "ui.class", endNodeClass)
-                if (!nodeLocation.contains(connection.end) && nodeLocation.contains(connection.start))
-                    setNodeLocation(connection.end, getRotatedPoint(nodeLocation(connection.start), connection.side))
+            addNode(connection.end)
+            addNodeAttribute(connection.end, "ui.label", connection.end.center.toString)
+            var endNodeClass: String = connection.end.center.toString
+            if (connection.end.isEntranceOrExit)
+                endNodeClass += ", entranceexit"
+            addNodeAttribute(connection.end, "ui.class", endNodeClass)
+            if (!nodeLocation.contains(connection.end) && nodeLocation.contains(connection.start))
+                setNodeLocation(connection.end, getRotatedPoint(nodeLocation(connection.start), connection.side))
 
-                    addEdge(connection)
-                    if (connection.isTraversable)
-                        addEdgeAttribute(connection, "ui.class", "traversable")
-            } else
-                ignoredConnectionCount += 1
+            addEdge(connection)
+            if (connection.isTraversable)
+                addEdgeAttribute(connection, "ui.class", "traversable")
+            //            } else
+            //                ignoredConnectionCount += 1
             connectionArr -= connection
         } else {
             codeOpt = connectionArr.flatMap(_.codeArr).distinct.find(!addedNodes.contains(_))

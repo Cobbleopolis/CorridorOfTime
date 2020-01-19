@@ -4,7 +4,7 @@ organization := "com.cobble"
 
 name := "CorridorsOfTime"
 
-version := "1.1.0"
+version := "1.2.0"
 
 scalaVersion := "2.13.1"
 

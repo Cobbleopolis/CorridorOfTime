@@ -8,6 +8,11 @@ This will read the JSON from [TLJ's site](https://tjl.co/corridors-of-time/). Si
    2. TL;DR You should be able to go into the `bin` folder and run the script no issue.
 3. The console will spit out a bunch of gibberish
 4. Eventually a window will pop up with all of the islands
+
+You can also pass what file to read from to the program from a command line argument.
+
+Usage: `corridorsoftime.bat ../someCSVFile.csv` or `corridorsoftime.bat ../someJSONFile.json` or whatever path you have 
+
 ### Controls
 | Button            | Action      |
 |-------------------|-------------|

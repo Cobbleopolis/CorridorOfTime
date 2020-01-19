@@ -3,10 +3,14 @@ package com.cobble.corridor
 import java.awt.Dimension
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.net.URI
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path, Paths}
+
+import scala.jdk.CollectionConverters._
 
 import com.cobble.corridor.CodeSymbol.CodeSymbol
 import javax.swing.{JFrame, SwingUtilities}
+import org.apache.commons.csv.{CSVFormat, CSVParser, CSVRecord}
 import org.graphstream.graph.implementations.MultiGraph
 import org.graphstream.ui.swing_viewer.{SwingViewer, ViewPanel}
 import org.graphstream.ui.view.{View, Viewer}
@@ -25,6 +29,8 @@ object CorridorsOfTime {
     val graph: MultiGraph = new MultiGraph(TITLE)
 
     val codesJsonPaths: Array[Path] = Array(
+        Paths.get(".", "Master.csv"),
+        Paths.get(".", "Batch.csv"),
         Paths.get(".", "codes.json"),
         Paths.get("..", "codes.json")
     )
@@ -36,32 +42,24 @@ object CorridorsOfTime {
 
     def main(args: Array[String]): Unit = {
         System.setProperty("org.graphstream.ui", "swing")
-        generateData()
+        generateData(args.headOption)
         generateGraph()
         setupStyle()
         SwingUtilities.invokeLater(() => createJframe())
     }
 
-    def generateData(): Unit = {
-        val existingPathOpt: Option[String] = codesJsonPaths.find(Files.exists(_)).map(_.toString)
+    def generateData(argPathOpt: Option[String]): Unit = {
+        val existingPathOpt: Option[Path] = if (argPathOpt.isDefined)
+            argPathOpt.map(Paths.get(_))
+        else
+            codesJsonPaths.find(Files.exists(_))
 
         if (existingPathOpt.isDefined) {
-            val codesSource: BufferedSource = Source.fromFile(existingPathOpt.get)
-            val codeJson: JsValue = Json.parse(codesSource.getLines.mkString("\n"))
-            codesSource.close()
-            implicit val codeSymbolFormat: Format[CodeSymbol] = new Format[CodeSymbol] {
-                def reads(json: JsValue): JsResult[CodeSymbol] = {
-                    val str: String = json.as[String].trim.toUpperCase
-                    if (CodeSymbol.values.exists(_.toString == str))
-                        JsSuccess(CodeSymbol.withName(str))
-                    else
-                        JsSuccess(CodeSymbol.UNKNOWN)
-                }
 
-                def writes(codeSymbol: CodeSymbol): JsValue = JsString(codeSymbol.toString)
-            }
-            implicit val codeFormat: Format[Code] = Json.format[Code]
-            val codes: Array[Code] = codeJson("codes").as[Array[Code]].filter(_.isValid).distinct
+            val codes: Array[Code] = if (existingPathOpt.get.endsWith(".json"))
+                getCodesFromJSON(existingPathOpt.get.toString)
+            else
+                getCodesFromCSV(existingPathOpt.get)
             codeMap = new CodeMap(codes)
         } else {
             System.err.println("No codes json file found. Looking for files:")
@@ -128,6 +126,46 @@ object CorridorsOfTime {
         frame.pack()
         frame.setVisible(true)
         frame.requestFocus()
+    }
+
+    def getCodesFromJSON(path: String): Array[Code] = {
+        val codesSource: BufferedSource = Source.fromFile(path)
+        val codeJson: JsValue = Json.parse(codesSource.getLines.mkString("\n"))
+        codesSource.close()
+        implicit val codeSymbolFormat: Format[CodeSymbol] = new Format[CodeSymbol] {
+            def reads(json: JsValue): JsResult[CodeSymbol] = {
+                val str: String = json.as[String].trim.toUpperCase
+                if (CodeSymbol.values.exists(_.toString == str))
+                    JsSuccess(CodeSymbol.withName(str))
+                else
+                    JsSuccess(CodeSymbol.UNKNOWN)
+            }
+
+            def writes(codeSymbol: CodeSymbol): JsValue = JsString(codeSymbol.toString)
+        }
+        implicit val codeFormat: Format[Code] = Json.format[Code]
+        codeJson("codes").as[Array[Code]].filter(_.isValid).distinct
+    }
+
+    def getCodesFromCSV(path: Path): Array[Code] = {
+        val format: CSVFormat = CSVFormat.EXCEL.withHeader("Image Link", "Center", "Openings", "Link 1", "Link 2", "Link 3", "Link 4", "Link 5", "Link 6")
+        val parser: Iterator[CSVRecord] = CSVParser.parse(path.toFile, StandardCharsets.UTF_8, format).iterator.asScala.drop(1)
+        parser.map(record => {
+//            val imgText: String = record.get("Image Link")
+            val wallArr: Array[Int] = record.get("Openings").split("\\D").filter(_.nonEmpty).map(_.toInt)
+            val openingArr: Array[Boolean] = (1 to 6).map(wallArr.contains).toArray
+            Code(CodeSymbol.fromFullName(record.get("Center")),
+                openingArr,
+                Array(
+                    record.get("Link 1").trim.map(c => CodeSymbol.fromFullName(c.toString.toUpperCase)).toArray,
+                    record.get("Link 2").trim.map(c => CodeSymbol.fromFullName(c.toString.toUpperCase)).toArray,
+                    record.get("Link 3").trim.map(c => CodeSymbol.fromFullName(c.toString.toUpperCase)).toArray,
+                    record.get("Link 4").trim.map(c => CodeSymbol.fromFullName(c.toString.toUpperCase)).toArray,
+                    record.get("Link 5").trim.map(c => CodeSymbol.fromFullName(c.toString.toUpperCase)).toArray,
+                    record.get("Link 6").trim.map(c => CodeSymbol.fromFullName(c.toString.toUpperCase)).toArray
+                )
+            )
+        }).toArray.filter(_.isValid).distinct
     }
 
 }

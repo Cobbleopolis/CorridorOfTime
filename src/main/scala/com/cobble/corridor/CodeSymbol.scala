@@ -11,5 +11,11 @@ object CodeSymbol extends Enumeration {
     val CAULDRON: CodeSymbol = Value("T")
     val UNKNOWN: CodeSymbol = Value("?")
 
-    def fromFullName(fullName: String): CodeSymbol = CodeSymbol.withName(fullName.toLowerCase.head.toString)
+    def fromFullName(fullName: String): CodeSymbol = {
+        val name: String = fullName.toUpperCase.head.toString
+        if (CodeSymbol.values.exists(_.toString == name))
+            CodeSymbol.withName(name)
+        else
+            CodeSymbol.UNKNOWN
+    }
 }

@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
-    final val GRAPH_X_SPACE: Double = 400
+    final val GRAPH_X_SPACE: Double = 4000
 
     final val GRAPH_Y_SPACE: Double = 300
 
@@ -90,7 +90,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
     def addNode(code: Code): Unit = {
         if (!addedNodes.contains(code)) {
-            println(s"Adding Node: ${code.checksum}")
+            println(s"[$getPercentStr] Adding Node: ${code.checksum}")
             sendNodeAdded(code.checksum, code.checksum)
             addedNodes += code
         }
@@ -115,7 +115,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
     def addEdge(connection: Connection): Unit = {
         if (!addedConnections.contains(connection)) {
-            println(s"Adding Connection: $connection")
+            println(s"[$getPercentStr] Adding Connection: $connection")
             sendEdgeAdded(connection.edgeId, connection.edgeId, connection.start.checksum, connection.end.checksum, false)
             addedConnections += connection
         }
@@ -130,5 +130,7 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
     def getRotatedPoint(sx: Double, sy: Double, side: Int): (Double, Double) = {
         (sx - (Math.cos(SIDE_DELTA * side + DEG_90) * NODE_SPACE), sy + (Math.sin(SIDE_DELTA * side + DEG_90) * NODE_SPACE))
     }
+
+    def getPercentStr: String = "%.2f".format((addedConnections.length.toDouble / codeMap.connections.length.toDouble) * 100.0)
 
 }

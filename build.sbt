@@ -13,6 +13,7 @@ maintainer := "https://github.com/Cobbleopolis/"
 resolvers += "jitpack" at "https://jitpack.io"
 
 libraryDependencies ++= Seq(
+    "org.apache.commons" % "commons-csv" % "1.4",
     "com.github.graphstream" % "gs-core" % "2.0.0-beta",
     "com.github.graphstream" % "gs-ui-swing" % "2.0-alpha",
     "com.typesafe.play" %% "play-json" % "2.8.1"

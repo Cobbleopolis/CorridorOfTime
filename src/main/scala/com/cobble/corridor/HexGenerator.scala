@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
-    final val GRAPH_X_SPACE: Double = 4000
+    final val GRAPH_X_SPACE: Double = 2500
 
     final val GRAPH_Y_SPACE: Double = 300
 
@@ -28,6 +28,12 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
     var index: Int = 0
 
+    var connectionArr: ArrayBuffer[Connection] = ArrayBuffer(codeMap.connections.clone(): _*)
+
+    val originalConnectionSize: Int = connectionArr.length
+
+    var ignoredConnectionCount: Int = 0
+
     val addedNodes: ArrayBuffer[Code] = ArrayBuffer()
 
     var nodeLocation: Map[Code, (Double, Double)] = Map()
@@ -41,36 +47,40 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
     }
 
     def nextEvents(): Boolean = {
-        val connectionOpt: Option[Connection] = codeMap.connections
+        val connectionOpt: Option[Connection] = connectionArr
             .filter(!addedConnections.contains(_))
             .find(con => addedNodes.exists(n => con.isPartOfConnection(n)))
         var codeOpt: Option[Code] = None
         if (connectionOpt.isDefined) {
             val connection: Connection = connectionOpt.get
 
-            addNode(connection.start)
-            addNodeAttribute(connection.start, "ui.label", connection.start.center.toString)
-            var startNodeClass: String = connection.start.center.toString
-            if (connection.start.isEntranceOrExit)
-                startNodeClass += ", entranceexit"
-            addNodeAttribute(connection.start, "ui.class",  startNodeClass)
-            if (!nodeLocation.contains(connection.start))
-                setNodeLocation(connection.start, getRotatedPoint(nodeLocation(connection.end), CorridorUtils.getOppositeSide(connection.side)))
+            if (getDistanceSqr(connection) <= NODE_SPACE * NODE_SPACE) {
+                addNode(connection.start)
+                addNodeAttribute(connection.start, "ui.label", connection.start.center.toString)
+                var startNodeClass: String = connection.start.center.toString
+                if (connection.start.isEntranceOrExit)
+                    startNodeClass += ", entranceexit"
+                addNodeAttribute(connection.start, "ui.class", startNodeClass)
+                if (!nodeLocation.contains(connection.start) && nodeLocation.contains(connection.end))
+                    setNodeLocation(connection.start, getRotatedPoint(nodeLocation(connection.end), CorridorUtils.getOppositeSide(connection.side)))
 
-            addNode(connection.end)
-            addNodeAttribute(connection.end, "ui.label", connection.end.center.toString)
-            var endNodeClass: String = connection.end.center.toString
-            if (connection.end.isEntranceOrExit)
-                endNodeClass += ", entranceexit"
-            addNodeAttribute(connection.end, "ui.class", endNodeClass)
-            if (!nodeLocation.contains(connection.end))
-                setNodeLocation(connection.end, getRotatedPoint(nodeLocation(connection.start), connection.side))
+                addNode(connection.end)
+                addNodeAttribute(connection.end, "ui.label", connection.end.center.toString)
+                var endNodeClass: String = connection.end.center.toString
+                if (connection.end.isEntranceOrExit)
+                    endNodeClass += ", entranceexit"
+                addNodeAttribute(connection.end, "ui.class", endNodeClass)
+                if (!nodeLocation.contains(connection.end) && nodeLocation.contains(connection.start))
+                    setNodeLocation(connection.end, getRotatedPoint(nodeLocation(connection.start), connection.side))
 
-            addEdge(connection)
-            if (connection.isTraversable)
-                addEdgeAttribute(connection, "ui.class", "traversable")
+                    addEdge(connection)
+                    if (connection.isTraversable)
+                        addEdgeAttribute(connection, "ui.class", "traversable")
+            } else
+                ignoredConnectionCount += 1
+            connectionArr -= connection
         } else {
-            codeOpt = codeMap.connections.flatMap(_.codeArr).distinct.find(!addedNodes.contains(_))
+            codeOpt = connectionArr.flatMap(_.codeArr).distinct.find(!addedNodes.contains(_))
             if (codeOpt.isDefined) {
                 addNode(codeOpt.get)
                 index += 1
@@ -85,7 +95,8 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
     }
 
     def end(): Unit = {
-
+        println(s"[$getPercentStr] Graph generated")
+        //TODO Add statistics
     }
 
     def addNode(code: Code): Unit = {
@@ -131,6 +142,16 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
         (sx - (Math.cos(SIDE_DELTA * side + DEG_90) * NODE_SPACE), sy + (Math.sin(SIDE_DELTA * side + DEG_90) * NODE_SPACE))
     }
 
-    def getPercentStr: String = "%.2f".format((addedConnections.length.toDouble / codeMap.connections.length.toDouble) * 100.0)
+    def getDistanceSqr(connection: Connection): Double = {
+        val startLocationOpt: Option[(Double, Double)] = nodeLocation.get(connection.start)
+        val endLocationOpt: Option[(Double, Double)] = nodeLocation.get(connection.end)
+        if (startLocationOpt.isEmpty || endLocationOpt.isEmpty)
+            0
+        else
+            (startLocationOpt.get._1 + endLocationOpt.get._1) * (startLocationOpt.get._1 + endLocationOpt.get._1) +
+                (startLocationOpt.get._2 + endLocationOpt.get._2) * (startLocationOpt.get._2 + endLocationOpt.get._2)
+    }
+
+    def getPercentStr: String = "%.2f%%".format((addedConnections.length.toDouble / (originalConnectionSize - ignoredConnectionCount).toDouble) * 100.0)
 
 }

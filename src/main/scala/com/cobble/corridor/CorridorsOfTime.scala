@@ -30,7 +30,7 @@ object CorridorsOfTime {
 
     val codesJsonPaths: Array[Path] = Array(
         Paths.get(".", "Master.csv"),
-        Paths.get(".", "Batch.csv"),
+        Paths.get("..", "Master.csv"),
         Paths.get(".", "codes.json"),
         Paths.get("..", "codes.json")
     )
@@ -55,8 +55,7 @@ object CorridorsOfTime {
             codesJsonPaths.find(Files.exists(_))
 
         if (existingPathOpt.isDefined) {
-
-            val codes: Array[Code] = if (existingPathOpt.get.endsWith(".json"))
+            val codes: Array[Code] = if (existingPathOpt.get.toString.endsWith(".json"))
                 getCodesFromJSON(existingPathOpt.get.toString)
             else
                 getCodesFromCSV(existingPathOpt.get)

@@ -20,6 +20,8 @@ class HexGenerator(codeMap: CodeMap) extends SourceBase {
 
     final val MAX_X: Double = 15000
 
+    final val DIST_THRESHOLD_SQR: Double = (4 * NODE_SPACE) * (4 * NODE_SPACE)
+
     var largestX: Double = 0
 
     var lowestY: Double = 0

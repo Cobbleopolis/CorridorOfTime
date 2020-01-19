@@ -16,6 +16,7 @@ node {
     text-offset: 0;
     text-mode: hidden;
     shape: circle;
+    z-index: 20;
 }
 
 node.B {
@@ -55,4 +56,6 @@ node.entranceexit {
 
 edge.traversable {
     fill-color: white;
+    z-index: 10;
+    size: 2px;
 }
